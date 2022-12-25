@@ -2,10 +2,10 @@ name: CondaDev
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - master
-      - develop
 
 jobs:
   build:
@@ -44,7 +44,7 @@ jobs:
       uses: actions/cache@v3
       env:
         # Increase this value to reset cache if environment.devenv.yml has not changed
-        CACHE_NUMBER: 1
+        CACHE_NUMBER: 0
       with:
         path: ~/conda_pkgs_dir
         key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.devenv.yml') }}
@@ -66,7 +66,7 @@ jobs:
         conda config --add channels conda-forge
         conda install conda-devenv=2.1.1
         conda devenv
-        source activate libtins-test
+        conda activate libtins-test
 
     - name: configure
       shell: bash -l {0}
