@@ -1,5 +1,8 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.1)
-PROJECT(libtins)
+# pre-test discovery mode for gtest_discover_tests was added in 3.18
+cmake_minimum_required(VERSION 3.12...3.18)
+
+# Add cmake modules of this project to the module path
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 OPTION(LIBTINS_BUILD_EXAMPLES "Build examples" ON)
 OPTION(LIBTINS_BUILD_TESTS "Build tests" ON)
@@ -11,6 +14,11 @@ IF(NOT CMAKE_BUILD_TYPE)
 ELSE(NOT CMAKE_BUILD_TYPE)
     MESSAGE(STATUS "Using specified '${CMAKE_BUILD_TYPE}' build type.")
 ENDIF(NOT CMAKE_BUILD_TYPE)
+
+project(
+    libtins
+    LANGUAGES CXX
+)
 
 # Compilation flags.
 IF(MSVC)
@@ -49,9 +57,6 @@ SET(TINS_VERSION_MAJOR 4)
 SET(TINS_VERSION_MINOR 6)
 SET(TINS_VERSION_PATCH 0)
 SET(LIBTINS_VERSION "${TINS_VERSION_MAJOR}.${TINS_VERSION_MINOR}")
-
-# Required Packages
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 
 # Allow disabling packet capture mechanism
 OPTION(LIBTINS_ENABLE_PCAP "Enable capturing packets via libpcap" ON)

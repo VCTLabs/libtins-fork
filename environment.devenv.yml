@@ -1,0 +1,17 @@
+name: libtins-test
+
+dependencies:
+  - python ={{ get_env("PY_VER", default="3.7") }}
+  - cmake>=3.18
+  - ninja
+  - c-compiler
+  - cxx-compiler
+  - pip
+  - make  # [unix]
+  - pkg-config  # [unix]
+  - gtest
+  - libpcap
+  - boost
+  - boost-cpp
+  - lcov
+  - gcovr
