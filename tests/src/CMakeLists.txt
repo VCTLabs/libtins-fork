@@ -12,13 +12,12 @@ FIND_PACKAGE(Threads REQUIRED)
 LINK_DIRECTORIES(
     ${GOOGLETEST_LIBRARY}
 )
-# Link against GoogleTest, libtins and pthread.
+# Link against GoogleTest, libtins
 # Pthread is required by GoogleTest
+# (gtest now sets Thread::Thread automatically)
 LINK_LIBRARIES(
-    GTest::gtest
-    GTest::gtest_main
     tins
-    ${CMAKE_THREAD_LIBS_INIT}
+    ${GTEST_LINK_LIBRARIES}
     ${PCAP_LIBRARY}
 )
 
