@@ -15,9 +15,9 @@ LINK_DIRECTORIES(
 # Link against GoogleTest, libtins and pthread.
 # Pthread is required by GoogleTest
 LINK_LIBRARIES(
-    gtest
-    gtest_main
-    tins 
+    GTest::gtest
+    GTest::gtest_main
+    tins
     ${CMAKE_THREAD_LIBS_INIT}
     ${PCAP_LIBRARY}
 )

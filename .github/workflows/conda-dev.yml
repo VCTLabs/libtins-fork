@@ -61,14 +61,6 @@ jobs:
         channel-priority: strict
         use-only-tar-bz2: true
 
-    - name: Set environment for MSVC (Windows)
-      shell: bash -el {0}
-      if:  matrix.os == 'windows-2019'
-      run: |
-        # Set these env vars so cmake picks the correct compiler
-        echo "CXX=cl.exe" >> $GITHUB_ENV
-        echo "CC=cl.exe" >> $GITHUB_ENV
-
     - name: Configure condadev environment
       shell: bash -el {0}
       env:
