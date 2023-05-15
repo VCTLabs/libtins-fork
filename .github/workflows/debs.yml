@@ -38,8 +38,8 @@ jobs:
 
       - name: Fetch debian files
         run: |
-          wget https://launchpad.net/~nerdboy/+archive/ubuntu/embedded/+sourcefiles/libtins/4.2-1build1/libtins_4.2-1build1.debian.tar.xz
-          tar xf libtins_4.2-1build1.debian.tar.xz && rm *debian.tar.xz
+          wget https://launchpad.net/~nerdboy/+archive/ubuntu/embedded/+sourcefiles/libtins/4.2-1build1ci/libtins_4.2-1build1ci.debian.tar.xz
+          tar xf libtins_4.2-1build1ci.debian.tar.xz && rm *debian.tar.xz
           ls
 
       - name: Update debian changelog
@@ -53,9 +53,10 @@ jobs:
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
+          apt-opts: --install-recommends
           docker-image: "debian:${{ matrix.dist }}-slim"
           buildpackage-opts: --build=binary --no-sign
-          extra-build-deps: git cmake 
+          extra-build-deps: git cmake
 
       - name: Upload deb files
         uses: actions/upload-artifact@v3

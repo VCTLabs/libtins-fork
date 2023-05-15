@@ -98,7 +98,7 @@ ENDIF(WIN32)
 
 INCLUDE(CTest)
 INCLUDE(GNUInstallDirs)
-INCLUDE(ExternalProject)
+#INCLUDE(ExternalProject)
 
 # *******************
 # Compilation options
@@ -300,7 +300,12 @@ IF(LIBTINS_BUILD_TESTS)
             # Specify the commit => this is release 1.12.1
             URL https://github.com/google/googletest/archive/58d77fa8070e8cec2dc1ed015d66b454c8d78850.zip
         )
-        FetchContent_MakeAvailable(googletest)
+        FetchContent_GetProperties(googletest)
+        if(NOT googletest_POPULATED)
+          # Fetch the content using previously declared details
+          FetchContent_Populate(googletest)
+          add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+        endif()
         include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
     ENDIF()
     # For Windows: Prevent overriding the parent project's compiler/linker settings
