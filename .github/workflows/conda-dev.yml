@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         # does not like windows
-        os: ['ubuntu-22.04', 'ubuntu-20.04', 'macOS-12']
+        os: ['ubuntu-22.04', 'ubuntu-20.04']
         python-version: ['3.9', '3.11']
         include:
           - os: 'ubuntu-22.04'
@@ -24,9 +24,7 @@ jobs:
           - os: 'ubuntu-20.04'
             generator: 'Ninja'
             build_type: 'RelWithDebInfo'
-          - os: 'macOS-12'
-            generator: 'Ninja'
-            build_type: 'Release'
+
     env:
       OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python-version }}

@@ -38,8 +38,8 @@ jobs:
 
       - name: Fetch debian files
         run: |
-          wget https://launchpad.net/~nerdboy/+archive/ubuntu/embedded/+sourcefiles/libtins/4.2-1build1ci/libtins_4.2-1build1ci.debian.tar.xz
-          tar xf libtins_4.2-1build1ci.debian.tar.xz && rm *debian.tar.xz
+          wget https://launchpad.net/~nerdboy/+archive/ubuntu/embedded/+sourcefiles/libtins/4.2-1build3ci/libtins_4.2-1build3ci.debian.tar.xz
+          tar xf libtins_4.2*.tar.xz && rm *debian.tar.xz
           ls
 
       - name: Update debian changelog
