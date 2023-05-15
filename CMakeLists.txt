@@ -283,31 +283,17 @@ IF(LIBTINS_BUILD_EXAMPLES)
     ENDIF()
 ENDIF()
 
+set(GOOGLETEST_SRC_DIR
+    ""
+    CACHE PATH "path to googletest source, in place of prebuilt library"
+)
+
 IF(LIBTINS_BUILD_TESTS)
     # Only include googletest if the git submodule has been fetched
     IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/googletest/CMakeLists.txt")
-        # Enable tests and add the test directory
-        MESSAGE(STATUS "Tests have been enabled")
-        SET(GOOGLETEST_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/googletest)
-        SET(GOOGLETEST_INCLUDE ${GOOGLETEST_ROOT}/googletest/include)
-        SET(GOOGLETEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/googletest)
-        SET(GOOGLETEST_LIBRARY ${GOOGLETEST_BINARY_DIR}/googletest)
-
-        ExternalProject_Add(
-            googletest
-            DOWNLOAD_COMMAND ""
-            SOURCE_DIR ${GOOGLETEST_ROOT}
-            BINARY_DIR ${GOOGLETEST_BINARY_DIR}
-            CMAKE_CACHE_ARGS "-DBUILD_GTEST:bool=ON" "-DBUILD_GMOCK:bool=OFF"
-                            "-Dgtest_force_shared_crt:bool=ON"
-                            "-DCMAKE_CXX_COMPILER:path=${CMAKE_CXX_COMPILER}"
-            INSTALL_COMMAND ""
-        )
-        # Make sure we build googletest before anything else
-        ADD_DEPENDENCIES(tins googletest)
-        set(GTEST_LINK_LIBRARIES gtest gtest_main)
-        ENABLE_TESTING()
-        ADD_SUBDIRECTORY(tests)
+        set(BUILD_GMOCK OFF)
+        set(BUILD_GTEST ON)
+        add_subdirectory(${GOOGLETEST_SRC_DIR} googletest)
     ELSE()
         FIND_PACKAGE(GTest QUIET)
         IF(${GTest_FOUND})
