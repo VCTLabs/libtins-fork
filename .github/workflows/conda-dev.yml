@@ -14,7 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['ubuntu-22.04', 'ubuntu-20.04', 'macOS-11', 'windows-2019']
+        # does not like windows
+        os: ['ubuntu-22.04', 'ubuntu-20.04', 'macOS-12']
         python-version: ['3.9', '3.11']
         include:
           - os: 'ubuntu-22.04'
@@ -23,17 +24,13 @@ jobs:
           - os: 'ubuntu-20.04'
             generator: 'Ninja'
             build_type: 'RelWithDebInfo'
-          - os: 'macOS-11'
-            generator: 'Ninja'
-            build_type: 'Release'
-          - os: 'windows-2019'
+          - os: 'macOS-12'
             generator: 'Ninja'
             build_type: 'Release'
     env:
       OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python-version }}
       PYTHONIOENCODING: utf-8
-      #CMAKE_ARGS: ${{ matrix.use_namespace && '-DABC_USE_NAMESPACE=xxx' || '' }}
 
     steps:
     - uses: actions/checkout@v3

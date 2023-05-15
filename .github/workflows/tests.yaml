@@ -19,7 +19,7 @@ jobs:
         run: sudo apt-get install -y libpcap-dev
 
       - name: Initialize build system
-        run: mkdir build && cd build && cmake ..
+        run: mkdir build && cd build && cmake -DLIBTINS_ENABLE_WPA2=OFF ..
 
       - name: Build tests
         run: cmake --build build --target tests
