@@ -24,6 +24,16 @@ project(
     LANGUAGES CXX
 )
 
+# Check the thread library info early as setting compiler flags seems to
+# interfere with the detection and causes CMAKE_THREAD_LIBS_INIT to not
+# include -lpthread when it should.
+if(LIBTINS_BUILD_TESTS)
+    if (NOT TARGET Threads::Threads)
+        find_package(Threads REQUIRED)
+    endif ()
+    set(LINK_LIBS ${LINK_LIBS} Threads::Threads)
+endif()
+
 # Compilation flags.
 IF(MSVC)
     # Don't always use Wall, since VC's /Wall is ridiculously verbose.

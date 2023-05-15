@@ -6,9 +6,6 @@ INCLUDE_DIRECTORIES(
     ${PCAP_INCLUDE_DIR}
 )
 
-# Find pthread library
-FIND_PACKAGE(Threads REQUIRED)
-
 LINK_DIRECTORIES(
     ${GOOGLETEST_LIBRARY}
 )
@@ -106,4 +103,3 @@ IF(LIBTINS_ENABLE_DOT11)
         CREATE_TEST(wpa2_decrypt)
     ENDIF()
 ENDIF()
-
