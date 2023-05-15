@@ -1,6 +1,10 @@
 # pre-test discovery mode for gtest_discover_tests was added in 3.18
 cmake_minimum_required(VERSION 3.12...3.18)
 
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
+endif()
+
 # Add cmake modules of this project to the module path
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
@@ -92,6 +96,8 @@ IF(WIN32)
 
 ENDIF(WIN32)
 
+INCLUDE(CTest)
+INCLUDE(GNUInstallDirs)
 INCLUDE(ExternalProject)
 
 # *******************
@@ -283,27 +289,25 @@ IF(LIBTINS_BUILD_EXAMPLES)
     ENDIF()
 ENDIF()
 
-set(GOOGLETEST_SRC_DIR
-    ""
-    CACHE PATH "path to googletest source, in place of prebuilt library"
-)
-
 IF(LIBTINS_BUILD_TESTS)
-    # Only include googletest if the git submodule has been fetched
-    IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/googletest/CMakeLists.txt")
-        set(BUILD_GMOCK OFF)
-        set(BUILD_GTEST ON)
-        add_subdirectory(${GOOGLETEST_SRC_DIR} googletest)
-    ELSE()
-        FIND_PACKAGE(GTest QUIET)
-        IF(${GTest_FOUND})
-            set(GTEST_LINK_LIBRARIES GTest::gtest GTest::gtest_main)
-            ENABLE_TESTING()
-            ADD_SUBDIRECTORY(tests)
-        ELSE()
-            MESSAGE(STATUS "googletest git submodule is absent. Run `git submodule init && git submodule update` to get it")
-        ENDIF()
+    find_package(GTest)
+    include_directories(${GTEST_INCLUDE_DIRS})
+    IF(NOT GTEST_FOUND)
+        message (WARNING "Can't find system Google Test")
+        include(FetchContent)
+        FetchContent_Declare(
+            googletest
+            # Specify the commit => this is release 1.12.1
+            URL https://github.com/google/googletest/archive/58d77fa8070e8cec2dc1ed015d66b454c8d78850.zip
+        )
+        FetchContent_MakeAvailable(googletest)
+        include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
     ENDIF()
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    ENABLE_TESTING()
+    set(GTEST_LINK_LIBRARIES gtest gtest_main)
+    ADD_SUBDIRECTORY(tests)
 ENDIF()
 
 # **********************************
