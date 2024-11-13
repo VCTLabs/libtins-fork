@@ -10,19 +10,19 @@ jobs:
   Ubuntu-Tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
 
       - name: Install libpcap
         run: sudo apt-get install -y libpcap-dev
 
-      - name: Initialize submodules
-        run: git submodule init && git submodule update
-
       - name: Initialize build system
-        run: mkdir build && cd build && cmake ..
+        run: cmake -G "Unix Makefiles" -S . -B build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build tests
         run: cmake --build build --target tests
 
       - name: Run tests
-        run: ctest build
+        run: ctest -V --test-dir build/

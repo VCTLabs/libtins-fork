@@ -6,19 +6,15 @@ INCLUDE_DIRECTORIES(
     ${PCAP_INCLUDE_DIR}
 )
 
-# Find pthread library
-FIND_PACKAGE(Threads REQUIRED)
-
 LINK_DIRECTORIES(
     ${GOOGLETEST_LIBRARY}
 )
-# Link against GoogleTest, libtins and pthread.
+# Link against GoogleTest, libtins
 # Pthread is required by GoogleTest
+# (gtest now sets Thread::Thread automatically)
 LINK_LIBRARIES(
-    gtest
-    gtest_main
-    tins 
-    ${CMAKE_THREAD_LIBS_INIT}
+    tins
+    ${GTEST_LINK_LIBRARIES}
     ${PCAP_LIBRARY}
 )
 
@@ -107,4 +103,3 @@ IF(LIBTINS_ENABLE_DOT11)
         CREATE_TEST(wpa2_decrypt)
     ENDIF()
 ENDIF()
-

@@ -1,0 +1,25 @@
+name: libtins-test
+
+dependencies:
+  - python ={{ get_env("PY_VER", default="3.9") }}
+  - cmake>=3.18
+  - ninja
+  - make  # [unix]
+  - pkg-config  # [unix]
+  - gtest
+  - gmock
+  - libpcap
+  - boost
+  - boost-cpp
+  - lcov
+  - gcovr
+  - gxx_linux-64   # [linux]
+  - ccache         # [unix]
+  - clcache        # [win]
+
+environment:
+  CPATH:
+    - $CONDA_PREFIX/include           # [unix]
+    - $CONDA_PREFIX/Library/include   # [win]
+
+  LD_LIBRARY_PATH: $CONDA_PREFIX/lib  # [unix]

@@ -46,6 +46,7 @@
     #include <winsock2.h>
     #include <ws2tcpip.h>
     #include <iphlpapi.h>
+    #include <ip2string.h>
     #undef interface
 #endif
 #include <tins/exceptions.h>
