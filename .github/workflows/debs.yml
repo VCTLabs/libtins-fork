@@ -10,29 +10,29 @@ on:
 jobs:
   build-debs:
     name: ${{ matrix.name }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       fail-fast: false
       matrix:
         name: [
-          x64_buster,
-          x64_bullseye,
-          x64_bookworm
+          x64_bookworm,
+          x64_trixie,
+          x64_sid,
         ]
 
         include:
-          - name: x64_buster
-            dist: buster
-
-          - name: x64_bullseye
-            dist: bullseye
-
           - name: x64_bookworm
             dist: bookworm
 
+          - name: x64_trixie
+            dist: trixie
+
+          - name: x64_sid
+            dist: sid
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -45,7 +45,7 @@ jobs:
       - name: Update debian changelog
         run: |
           sudo apt-get update
-          sudo apt-get install devscripts
+          sudo apt-get install devscripts libgtest-dev
           debchange -v "`git describe --tags | sed -e "s|v||"`-${{ matrix.dist }}" -b -M --distribution ${{ matrix.dist }} "ci build"
 
       - name: Build deb packages
@@ -59,7 +59,7 @@ jobs:
           extra-build-deps: git cmake
 
       - name: Upload deb files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "deb-packages"
           path: ./debian/artifacts/*.deb

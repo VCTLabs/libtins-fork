@@ -15,13 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         # does not like windows
-        os: ['ubuntu-22.04', 'ubuntu-20.04']
+        os: ['ubuntu-22.04', 'ubuntu-24.04']
         python-version: ['3.9', '3.11']
         include:
           - os: 'ubuntu-22.04'
             generator: 'Ninja'
             build_type: 'Release'
-          - os: 'ubuntu-20.04'
+          - os: 'ubuntu-24.04'
             generator: 'Ninja'
             build_type: 'RelWithDebInfo'
 
@@ -31,16 +31,16 @@ jobs:
       PYTHONIOENCODING: utf-8
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Setup base python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
     - name: Cache conda
       id: cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         # Increase this value to reset cache if environment.devenv.yml has not changed
         CACHE_NUMBER: 1
@@ -48,7 +48,7 @@ jobs:
         path: ~/conda_pkgs_dir
         key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.devenv.yml') }}
 
-    - uses: conda-incubator/setup-miniconda@v2.2.0
+    - uses: conda-incubator/setup-miniconda@v3
       with:
         auto-update-conda: true
         python-version: ${{ matrix.python-version }}

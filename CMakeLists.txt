@@ -1,6 +1,10 @@
 # pre-test discovery mode for gtest_discover_tests was added in 3.18
 cmake_minimum_required(VERSION 3.12...3.18)
 
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
+
 if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif()
@@ -71,6 +75,15 @@ SET(TINS_VERSION_MAJOR 4)
 SET(TINS_VERSION_MINOR 6)
 SET(TINS_VERSION_PATCH 0)
 SET(LIBTINS_VERSION "${TINS_VERSION_MAJOR}.${TINS_VERSION_MINOR}")
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+    set(CLANG_DEFAULT_CXX_STDLIB libc++)
+    set(CLANG_DEFAULT_RTLIB compiler-rt)
+endif()
 
 # Allow disabling packet capture mechanism
 OPTION(LIBTINS_ENABLE_PCAP "Enable capturing packets via libpcap" ON)
@@ -176,7 +189,7 @@ ELSE()
 ENDIF()
 
 # Search for libboost
-FIND_PACKAGE(Boost)
+FIND_PACKAGE(Boost, CONFIG)
 
 # Optionally enable the ACK tracker (on by default)
 OPTION(LIBTINS_ENABLE_ACK_TRACKER "Enable TCP ACK tracking support" ON)
