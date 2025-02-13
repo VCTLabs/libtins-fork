@@ -1,3 +1,4 @@
 usr/include/*
+usr/lib/*/cmake/libtins/*.cmake
 usr/lib/*/pkgconfig/*
 usr/lib/*/libtins.so
