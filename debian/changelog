@@ -1,0 +1,38 @@
+libtins (4.5-1build2) noble; urgency=medium
+
+  * No-change rebuild for CVE-2024-3094
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Sun, 31 Mar 2024 19:47:29 +0000
+
+libtins (4.5-1build1) noble; urgency=medium
+
+  * No-change rebuild against libssl3t64
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Mon, 04 Mar 2024 18:29:00 +0000
+
+libtins (4.5-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #1050161)
+  * Add multiarch support (Closes: #1024945)
+    Kudos to Helmut Grohne
+
+ -- Federico Ceratto <federico@debian.org>  Thu, 15 Feb 2024 17:26:17 +0100
+
+libtins (4.0-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #897440)
+  * Add dependency (Closes: #894343)
+
+ -- Federico Ceratto <federico@debian.org>  Wed, 19 Sep 2018 22:31:41 +0100
+
+libtins (3.4-2) unstable; urgency=medium
+
+  * Include usr/lib/libtins.so, minor fixes.
+
+ -- Federico Ceratto <federico@debian.org>  Thu, 16 Jun 2016 18:24:52 +0100
+
+libtins (3.4-1) unstable; urgency=medium
+
+  * Initial release (Closes: #825025)
+
+ -- Federico Ceratto <federico@debian.org>  Mon, 06 Jun 2016 11:24:23 +0100

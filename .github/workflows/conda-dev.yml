@@ -1,0 +1,84 @@
+name: CondaDev
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: libtins ${{ matrix.python-version }} ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # does not like windows
+        os: ['ubuntu-22.04', 'ubuntu-24.04']
+        python-version: ['3.9', '3.11']
+        include:
+          - os: 'ubuntu-22.04'
+            generator: 'Ninja'
+            build_type: 'Release'
+          - os: 'ubuntu-24.04'
+            generator: 'Ninja'
+            build_type: 'RelWithDebInfo'
+
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+      PYTHONIOENCODING: utf-8
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup base python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Cache conda
+      id: cache
+      uses: actions/cache@v4
+      env:
+        # Increase this value to reset cache if environment.devenv.yml has not changed
+        CACHE_NUMBER: 1
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment.devenv.yml') }}
+
+    - uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
+        channels: conda-forge,defaults
+        channel-priority: strict
+        conda-remove-defaults: true
+        use-only-tar-bz2: true
+
+    - name: Configure condadev environment
+      shell: bash -el {0}
+      env:
+        PY_VER: ${{ matrix.python-version }}
+      run: |
+        conda config --set always_yes yes --set changeps1 no
+        conda config --add channels conda-forge
+        conda install conda-devenv
+        conda info -a
+        conda devenv
+
+    - name: Build and test
+      shell: bash -el {0}
+      env:
+        PY_VER: ${{ matrix.python-version }}
+      run: |
+        source activate libtins-test
+        cmake \
+          -G "${{ matrix.generator }}" -S . -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DLIBTINS_ENABLE_CXX11=ON \
+          -DCMAKE_INSTALL_PREFIX:PATH=${CONDA_PREFIX}
+        cmake --build build --target install --parallel 4
+        cmake --build build --target tests --parallel 4
+        ctest -V --test-dir build/

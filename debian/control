@@ -1,0 +1,36 @@
+Source: libtins
+Priority: optional
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Internet Measurement Packaging Team <pkg-netmeasure-discuss@lists.alioth.debian.org>
+Uploaders: Federico Ceratto <federico@debian.org>
+Build-Depends: debhelper-compat (= 12),
+ cmake,
+ libpcap-dev,
+ libssl-dev
+Standards-Version: 4.2.1
+Section: libs
+Homepage: https://libtins.github.io/
+Vcs-Git: https://salsa.debian.org/debian/libtins.git
+Vcs-Browser: https://salsa.debian.org/debian/libtins
+
+Package: libtins4.5
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: packet crafting and sniffing library
+ libtins is a high-level, multiplatform C++ network packet sniffing and
+ crafting library.
+ Its main purpose is to provide the C++ developer an easy, efficient, platform
+ and endianess-independent way to create tools which need to send, receive and
+ manipulate network packets.
+
+Package: libtins-dev
+Section: libdevel
+Architecture: any
+Depends: libtins4.5 (= ${binary:Version}), ${misc:Depends}, libpcap-dev
+Description: packet crafting and sniffing library - development files
+ libtins is a high-level, multiplatform C++ network packet sniffing and
+ crafting library.
+ Its main purpose is to provide the C++ developer an easy, efficient, platform
+ and endianess-independent way to create tools which need to send, receive and
+ manipulate network packets.
+ This package contains development files.
