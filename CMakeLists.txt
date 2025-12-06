@@ -1,5 +1,16 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.1)
-PROJECT(libtins)
+# pre-test discovery mode for gtest_discover_tests was added in 3.18
+cmake_minimum_required(VERSION 3.12...3.18)
+
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
+
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
+endif()
+
+# Add cmake modules of this project to the module path
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 OPTION(LIBTINS_BUILD_EXAMPLES "Build examples" ON)
 OPTION(LIBTINS_BUILD_TESTS "Build tests" ON)
@@ -11,6 +22,21 @@ IF(NOT CMAKE_BUILD_TYPE)
 ELSE(NOT CMAKE_BUILD_TYPE)
     MESSAGE(STATUS "Using specified '${CMAKE_BUILD_TYPE}' build type.")
 ENDIF(NOT CMAKE_BUILD_TYPE)
+
+project(
+    libtins
+    LANGUAGES CXX
+)
+
+# Check the thread library info early as setting compiler flags seems to
+# interfere with the detection and causes CMAKE_THREAD_LIBS_INIT to not
+# include -lpthread when it should.
+if(LIBTINS_BUILD_TESTS)
+    if (NOT TARGET Threads::Threads)
+        find_package(Threads REQUIRED)
+    endif ()
+    set(LINK_LIBS ${LINK_LIBS} Threads::Threads)
+endif()
 
 # Compilation flags.
 IF(MSVC)
@@ -50,8 +76,14 @@ SET(TINS_VERSION_MINOR 6)
 SET(TINS_VERSION_PATCH 0)
 SET(LIBTINS_VERSION "${TINS_VERSION_MAJOR}.${TINS_VERSION_MINOR}")
 
-# Required Packages
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+    set(CLANG_DEFAULT_CXX_STDLIB libc++)
+    set(CLANG_DEFAULT_RTLIB compiler-rt)
+endif()
 
 # Allow disabling packet capture mechanism
 OPTION(LIBTINS_ENABLE_PCAP "Enable capturing packets via libpcap" ON)
@@ -87,7 +119,9 @@ IF(WIN32)
 
 ENDIF(WIN32)
 
-INCLUDE(ExternalProject)
+INCLUDE(CTest)
+INCLUDE(GNUInstallDirs)
+#INCLUDE(ExternalProject)
 
 # *******************
 # Compilation options
@@ -155,7 +189,7 @@ ELSE()
 ENDIF()
 
 # Search for libboost
-FIND_PACKAGE(Boost)
+FIND_PACKAGE(Boost, CONFIG)
 
 # Optionally enable the ACK tracker (on by default)
 OPTION(LIBTINS_ENABLE_ACK_TRACKER "Enable TCP ACK tracking support" ON)
@@ -279,38 +313,29 @@ IF(LIBTINS_BUILD_EXAMPLES)
 ENDIF()
 
 IF(LIBTINS_BUILD_TESTS)
-    # Only include googletest if the git submodule has been fetched
-    IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/googletest/CMakeLists.txt")
-        # Enable tests and add the test directory
-        MESSAGE(STATUS "Tests have been enabled")
-        SET(GOOGLETEST_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/googletest)
-        SET(GOOGLETEST_INCLUDE ${GOOGLETEST_ROOT}/googletest/include)
-        SET(GOOGLETEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/googletest)
-        SET(GOOGLETEST_LIBRARY ${GOOGLETEST_BINARY_DIR}/googletest)
-
-        ExternalProject_Add(
+    find_package(GTest)
+    include_directories(${GTEST_INCLUDE_DIRS})
+    IF(NOT GTEST_FOUND)
+        message (WARNING "Can't find system Google Test")
+        include(FetchContent)
+        FetchContent_Declare(
             googletest
-            DOWNLOAD_COMMAND ""
-            SOURCE_DIR ${GOOGLETEST_ROOT}
-            BINARY_DIR ${GOOGLETEST_BINARY_DIR}
-            CMAKE_CACHE_ARGS "-DBUILD_GTEST:bool=ON" "-DBUILD_GMOCK:bool=OFF"
-                            "-Dgtest_force_shared_crt:bool=ON"
-                            "-DCMAKE_CXX_COMPILER:path=${CMAKE_CXX_COMPILER}"
-            INSTALL_COMMAND ""
+            # Specify the commit => this is release 1.12.1
+            URL https://github.com/google/googletest/archive/58d77fa8070e8cec2dc1ed015d66b454c8d78850.zip
         )
-        # Make sure we build googletest before anything else
-        ADD_DEPENDENCIES(tins googletest)
-        ENABLE_TESTING()
-        ADD_SUBDIRECTORY(tests)
-    ELSE()
-        FIND_PACKAGE(GTest QUIET)
-        IF(${GTest_FOUND})
-            ENABLE_TESTING()
-            ADD_SUBDIRECTORY(tests)
-        ELSE()
-            MESSAGE(STATUS "googletest git submodule is absent. Run `git submodule init && git submodule update` to get it")
-        ENDIF()
+        FetchContent_GetProperties(googletest)
+        if(NOT googletest_POPULATED)
+          # Fetch the content using previously declared details
+          FetchContent_Populate(googletest)
+          add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+        endif()
+        include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
     ENDIF()
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    ENABLE_TESTING()
+    set(GTEST_LINK_LIBRARIES gtest gtest_main)
+    ADD_SUBDIRECTORY(tests)
 ENDIF()
 
 # **********************************
