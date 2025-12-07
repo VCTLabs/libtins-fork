@@ -15,6 +15,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 OPTION(LIBTINS_BUILD_EXAMPLES "Build examples" ON)
 OPTION(LIBTINS_BUILD_TESTS "Build tests" ON)
 
+
 # Compile in release mode by default
 IF(NOT CMAKE_BUILD_TYPE)
     MESSAGE(STATUS "Setting build type to 'RelWithDebInfo' as none was specified.")
@@ -27,6 +28,10 @@ project(
     libtins
     LANGUAGES CXX
 )
+
+if(DEFINED ENV{VERBOSE})
+    set(CMAKE_VERBOSE_MAKEFILE ON)
+endif()
 
 # Check the thread library info early as setting compiler flags seems to
 # interfere with the detection and causes CMAKE_THREAD_LIBS_INIT to not
@@ -76,9 +81,10 @@ SET(TINS_VERSION_MINOR 7)
 SET(TINS_VERSION_PATCH 0)
 SET(LIBTINS_VERSION "${TINS_VERSION_MAJOR}.${TINS_VERSION_MINOR}")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+MESSAGE(STATUS "Using C++ STD version '${CMAKE_CXX_STANDARD}'")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
     set(CLANG_DEFAULT_CXX_STDLIB libc++)
