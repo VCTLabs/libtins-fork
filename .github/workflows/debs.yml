@@ -2,6 +2,7 @@ name: Debian packages
 
 on:
   workflow_dispatch:
+  workflow_call:
   pull_request:
   push:
     branches:
@@ -11,6 +12,8 @@ jobs:
   get_version:
     name: Get version info
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
     defaults:
       run:
         shell: bash
@@ -18,7 +21,7 @@ jobs:
       version: ${{ steps.git_ver.outputs.version }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -32,6 +35,8 @@ jobs:
   build_debs:
     name: ${{ matrix.name }}
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
     needs: [get_version]
 
     strategy:
@@ -60,7 +65,7 @@ jobs:
         run: |
           echo "Package version from git: ${VERSION}"
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
