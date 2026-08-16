@@ -52,20 +52,6 @@ endif ()
 
 #cmake_minimum_required(VERSION 2.8.3)
 
-#
-### Check for needed compiler flags
-#
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-std=c++11" _HAS_CXX11_FLAG)
-if (NOT _HAS_CXX11_FLAG)
-    check_cxx_compiler_flag("-std=c++0x" _HAS_CXX0X_FLAG)
-endif ()
-
-if (_HAS_CXX11_FLAG)
-    set(CXX11_COMPILER_FLAGS "-std=c++11")
-elseif (_HAS_CXX0X_FLAG)
-    set(CXX11_COMPILER_FLAGS "-std=c++0x")
-endif ()
 
 function(cxx11_check_feature FEATURE_NAME RESULT_VAR)
     if (NOT DEFINED ${RESULT_VAR})
